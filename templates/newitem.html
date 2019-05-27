@@ -1,0 +1,21 @@
+<html>
+
+<body>
+    <h1> New Item </h1>
+
+    <form action="{{url_for('newItem')}}" method='POST'>
+
+        <p>Title:</p>
+        <input type='text' size='30' name='title'>
+        <p>Description:</p>
+        <textarea name="description" id="description" cols="30" rows="10"></textarea>
+        <p>Category:</p>
+        <input type='text' size='30' name='category_name'>
+        </br>
+        <input type='submit' value='Create'>
+
+    </form>
+
+</body>
+
+</html>
