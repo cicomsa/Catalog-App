@@ -17,14 +17,17 @@
             </a>
             {% endfor %}
         </div>
-        <div class="items-list">
+        <div>
             <a href="{{url_for('newItem') }}">Add new item</a>
             <h3>LATEST ITEMS</h3>
+
             {% set sort_on = request.args.sort_on|default('id') %} {% for i in items|sort(attribute=sort_on, reverse = True) %}
-            <a href="{{url_for('showItem', category_name = i.category_name, item_title=i.title)}}">
-                <p>{{i.title}}</p>
-            </a>
-            <p>({{i.category_name}})</p>
+            <div class="items-list">
+                <a href="{{url_for('showItem', category_name = i.category_name, item_title=i.title)}}">
+                    <p>{{i.title}}</p>
+                </a>
+                <p>({{i.category_name}})</p>
+            </div>
             {% endfor %}
         </div>
     </section>
