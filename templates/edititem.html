@@ -1,36 +1,27 @@
-<html>
+{% extends "main.html" %} {% block content %}
+<h1> Edit Item </h1>
 
-<head>
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-</head>
+<form action="{{ url_for('editItem',category_name = category_name, item_title=item.title)}}" method='post'>
 
-<body>
+    <dl>
+        <dt>Title:</dt>
+        <dd>
+            <input type='text' size='30' name='title' placeholder='{{item.title }}'>
+        </dd>
+        <dt>Description:</dt>
+        <dd>
+            <textarea name='description' rows='5' cols='40' placeholder='{{item.description }}'></textarea>
+        </dd>
+        <dt>Category:</dt>
+        <dd>
+            <input type='text' size='8' name='category_name' placeholder='{{item.category_name}}'>
+        </dd>
 
-    <h1> Edit Item </h1>
-
-    <form action="{{ url_for('editItem',category_name = category_name, item_title=item.title)}}" method='post'>
-
-        <dl>
-            <dt>Title:</dt>
-            <dd>
-                <input type='text' size='30' name='title' placeholder='{{item.title }}'>
-            </dd>
-            <dt>Description:</dt>
-            <dd>
-                <textarea name='description' rows='5' cols='40' placeholder='{{item.description }}'></textarea>
-            </dd>
-            <dt>Category:</dt>
-            <dd>
-                <input type='text' size='8' name='category_name' placeholder='{{item.category_name}}'>
-            </dd>
-
-        </dl>
+    </dl>
 
 
-        <input type='submit' value='Edit'>
+    <input type='submit' value='Edit'>
 
-        <a href="{{url_for('categoryItems', category_name = category_name)}}"> Cancel </a>
-    </form>
-</body>
-
-</html>
+    <a href="{{url_for('categoryItems', category_name = category_name)}}"> Cancel </a>
+</form>
+{% endblock %}

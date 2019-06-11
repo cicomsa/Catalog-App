@@ -1,6 +1,8 @@
 .header {
     background-color: bisque;
+    display: flex;
     height: 30px;
+    justify-content: space-between;
     text-transform: uppercase;
     font-size: 25px;
 }
@@ -16,4 +18,8 @@
 
 h3 {
     text-transform: capitalize;
+}
+
+.g-signin {
+    color: blue;
 }

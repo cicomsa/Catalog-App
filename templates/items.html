@@ -1,35 +1,23 @@
-<html>
+{% extends "main.html" %} {% block content %}
+<section class="lists">
+    <div class="categories-list">
+        <h3>Categories</h3>
+        {% for i in categories %}
+        <a href="{{url_for('categoryItems', category_name = i.name)}}">
+            <p>{{i.name}}</p>
+        </a>
+        {% endfor %}
+    </div>
+    <div>
+        <h3>{{items | length }} {{category.name|capitalize}} items</h3>
 
-<head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css')}}">
-</head>
-
-<body>
-    <header class="header">
-        Catalog App
-    </header>
-    <section class="lists">
-        <div class="categories-list">
-            <h3>Categories</h3>
-            {% for i in categories %}
-            <a href="{{url_for('categoryItems', category_name = i.name)}}">
-                <p>{{i.name}}</p>
+        {% set sort_on = request.args.sort_on|default('id') %} {% for i in items|sort(attribute=sort_on, reverse = True) %}
+        <div class="items-list">
+            <a href="{{url_for('showItem', category_name = i.category_name, item_title=i.title)}}">
+                <p>{{i.title}}</p>
             </a>
-            {% endfor %}
         </div>
-        <div>
-            <h3>{{items | length }} {{category.name|capitalize}} items</h3>
-
-            {% set sort_on = request.args.sort_on|default('id') %} {% for i in items|sort(attribute=sort_on, reverse = True) %}
-            <div class="items-list">
-                <a href="{{url_for('showItem', category_name = i.category_name, item_title=i.title)}}">
-                    <p>{{i.title}}</p>
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
-</body>
-
-</html>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

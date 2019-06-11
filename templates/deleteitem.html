@@ -1,19 +1,11 @@
-<html>
+{% extends "main.html" %} {% block content %}
+<h1> Are you sure you want to delete {{item.title}}? </h1>
 
-<head>
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-</head>
+<form action="{{ url_for('deleteItem',category_name = item.category_name, item_title=item.title)}}" method='post'>
 
-<body>
-    <h1> Are you sure you want to delete {{item.title}}? </h1>
+    <input type='submit' , value='Delete'>
 
-    <form action="{{ url_for('deleteItem',category_name = item.category_name, item_title=item.title)}}" method='post'>
+</form>
 
-        <input type='submit' , value='Delete'>
-
-    </form>
-
-    <a href="{{url_for('categoryItems', category_name = category_name)}}"> Cancel </a>
-</body>
-
-</html>
+<a href="{{url_for('categoryItems', category_name = category_name)}}"> Cancel </a>
+{% endblock %}

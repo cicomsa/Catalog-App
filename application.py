@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify,flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from catalog import *
@@ -32,8 +32,7 @@ app.secret_key = b'_8#y2L"F4Q8z\n\xec]/'
 
 @app.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in range(32))
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
@@ -92,7 +91,7 @@ def gconnect():
         response = make_response(json.dumps('Current user is already connected.'),
                                  200)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect("/")
 
     # Store the access token in the session for later use.
     login_session['access_token'] = credentials.access_token
@@ -121,12 +120,11 @@ def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print('Access Token is None')
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(json.dumps('Current user is not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     print('In gdisconnect access token is %s', access_token)
-    print('User name is: ')
-    print(login_session['username'])
+    print(login_session)
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
@@ -190,7 +188,6 @@ def newItem():
 @app.route('/catalog/<category_name>/<item_title>/edit',
            methods=['GET', 'POST'])
 def editItem(category_name, item_title):
-    print(login_session)
     if 'gplus_id' not in login_session:
         return redirect('/login')
     editedItem = session.query(Items).filter_by(title=item_title).one()
