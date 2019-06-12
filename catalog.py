@@ -30,13 +30,13 @@ class Items(Base):
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
     category_name = Column(Integer, ForeignKey('categories.name'))
-    category = relationship(Categories)
+    category = relationship(Categories, backref='items')
 
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
-            'title': self.name,
+            'title': self.title,
             'description': self.description,
             'id': self.id
         }

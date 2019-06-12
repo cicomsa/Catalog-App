@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 from catalog import *
 
 from flask import session as login_session
@@ -109,10 +109,7 @@ def gconnect():
 
     output = ''
     output += '<h1>Welcome! '
-    # output += login_session['username']
-    # output += '!</h1>'
     flash("You are now logged in with %s as your email address." % login_session['email'])
-    # print("done!")
     return login_session['email']
 
 @app.route('/gdisconnect')
@@ -144,8 +141,19 @@ def gdisconnect():
 
 @app.route('/catalog/JSON')
 def categoriesJSON():
-    categories = session.query(Categories).all()
-    return jsonify(categories=[r.serialize for r in categories])
+    categories = session.query(Categories).options(
+        joinedload(Categories.items)).all()
+    return jsonify(
+        Categories=[
+            dict(
+                c.serialize,
+                items=[
+                    i.serialize for i in c.items]) for c in categories])
+
+@app.route('/catalog/<category_name>/JSON')
+def categoryJSON(category_name):
+    category = session.query(Categories).filter_by(name=category_name).first()
+    return jsonify(category=category.serialize)
 
 @app.route('/')
 @app.route('/catalog')
