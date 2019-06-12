@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload
@@ -30,12 +31,14 @@ session = DBSession()
 
 app.secret_key = b'_8#y2L"F4Q8z\n\xec]/'
 
+# login
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
+# redirect
 @app.route('/gconnect', methods=['GET', 'POST'])
 def gconnect():
     # Validate state token
@@ -112,6 +115,7 @@ def gconnect():
     flash("You are now logged in with %s as your email address." % login_session['email'])
     return login_session['email']
 
+# logout
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
@@ -139,6 +143,7 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+# catalog JSON
 @app.route('/catalog/JSON')
 def categoriesJSON():
     categories = session.query(Categories).options(
@@ -150,11 +155,13 @@ def categoriesJSON():
                 items=[
                     i.serialize for i in c.items]) for c in categories])
 
+# category JSON
 @app.route('/catalog/<category_name>/JSON')
 def categoryJSON(category_name):
     category = session.query(Categories).filter_by(name=category_name).first()
     return jsonify(category=category.serialize)
 
+# catalog page
 @app.route('/')
 @app.route('/catalog')
 def showCatalog():
@@ -163,7 +170,7 @@ def showCatalog():
     session.commit()
     return render_template('catalog.html', categories=categories, items=items)
 
-
+#  category page
 @app.route('/catalog/<category_name>/')
 def categoryItems(category_name):
     categories = session.query(Categories).all()
@@ -172,7 +179,7 @@ def categoryItems(category_name):
 
     return render_template('items.html', categories=categories, category=category, items=items)
 
-
+# item page
 @app.route('/catalog/<category_name>/<item_title>')
 def showItem(item_title, category_name):
     item = session.query(Items).filter_by(title=item_title).first()
@@ -180,6 +187,7 @@ def showItem(item_title, category_name):
 
     return render_template('item.html', item=item, category=category)
 
+# add item
 @app.route('/catalog/new', methods=['GET', 'POST'])
 def newItem():
     if 'gplus_id' not in login_session:
@@ -193,6 +201,7 @@ def newItem():
     else:
         return render_template('newitem.html')
 
+# edit item
 @app.route('/catalog/<category_name>/<item_title>/edit',
            methods=['GET', 'POST'])
 def editItem(category_name, item_title):
@@ -213,6 +222,7 @@ def editItem(category_name, item_title):
         return render_template(
             'edititem.html', category_name=category_name, item_title=item_title, item=editedItem)
 
+# delete item
 @app.route('/catalog/<category_name>/<item_title>/delete',
            methods=['GET', 'POST'])
 def deleteItem(category_name, item_title):

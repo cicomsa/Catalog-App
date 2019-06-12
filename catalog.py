@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
@@ -6,7 +7,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 
 Base = declarative_base()
-
 
 class Categories(Base):
     __tablename__ = 'categories'
@@ -21,7 +21,6 @@ class Categories(Base):
             'name': self.name,
             'id': self.id,
         }
-
 
 class Items(Base):
     __tablename__ = 'items'
@@ -41,8 +40,6 @@ class Items(Base):
             'id': self.id
         }
 
-
 engine = create_engine('sqlite:///categoriesitems.db')
-
 
 Base.metadata.create_all(engine)
