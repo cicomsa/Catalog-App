@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template
+from flask import request, redirect, url_for, jsonify, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload
 from catalog import *
@@ -31,12 +32,15 @@ session = DBSession()
 
 app.secret_key = b'_8#y2L"F4Q8z\n\xec]/'
 
+
 # login
 @app.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    random_choice = random.choice(string.ascii_uppercase + string.digits)
+    state = ''.join(random_choice for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
+
 
 # redirect
 @app.route('/gconnect', methods=['GET', 'POST'])
@@ -91,7 +95,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
+        response_copy = 'Current user is already connected.'
+        response = make_response(json.dumps(response_copy),
                                  200)
         response.headers['Content-Type'] = 'application/json'
         return redirect("/")
@@ -112,8 +117,10 @@ def gconnect():
 
     output = ''
     output += '<h1>Welcome! '
-    flash("You are now logged in with %s as your email address." % login_session['email'])
+    flash_message = "You are now logged in with %s as your email address."
+    flash(flash_message % login_session['email'])
     return login_session['email']
+
 
 # logout
 @app.route('/gdisconnect')
@@ -121,12 +128,14 @@ def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print('Access Token is None')
-        response = make_response(json.dumps('Current user is not connected.'), 401)
+        response_copy = 'Current user is not connected.'
+        response = make_response(json.dumps(response_copy), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     print('In gdisconnect access token is %s', access_token)
     print(login_session)
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url_path = 'https://accounts.google.com/o/oauth2/revoke?token=%s'
+    url = url_path % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('result is ')
@@ -139,9 +148,11 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response_copy = 'Failed to revoke token for given user.'
+        response = make_response(json.dumps(response_copy, 400))
         response.headers['Content-Type'] = 'application/json'
         return response
+
 
 # catalog JSON
 @app.route('/catalog/JSON')
@@ -155,11 +166,13 @@ def categoriesJSON():
                 items=[
                     i.serialize for i in c.items]) for c in categories])
 
+
 # category JSON
 @app.route('/catalog/<category_name>/JSON')
 def categoryJSON(category_name):
     category = session.query(Categories).filter_by(name=category_name).first()
     return jsonify(category=category.serialize)
+
 
 # catalog page
 @app.route('/')
@@ -170,14 +183,20 @@ def showCatalog():
     session.commit()
     return render_template('catalog.html', categories=categories, items=items)
 
+
 #  category page
 @app.route('/catalog/<category_name>/')
 def categoryItems(category_name):
     categories = session.query(Categories).all()
     category = session.query(Categories).filter_by(name=category_name).first()
     items = session.query(Items).filter_by(category_name=category_name).all()
+    html = 'items.html'
+    return render_template(
+        html,
+        categories=categories,
+        category=category,
+        items=items)
 
-    return render_template('items.html', categories=categories, category=category, items=items)
 
 # item page
 @app.route('/catalog/<category_name>/<item_title>')
@@ -187,19 +206,24 @@ def showItem(item_title, category_name):
 
     return render_template('item.html', item=item, category=category)
 
+
 # add item
 @app.route('/catalog/new', methods=['GET', 'POST'])
 def newItem():
     if 'gplus_id' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        category_name = request.form['category_name']
         newItem = Items(
-            title=request.form['title'], description=request.form['description'], category_name=request.form['category_name'])
+            title=title, description=description, category_name=category_name)
         session.add(newItem)
         session.commit()
         return redirect(url_for('showCatalog'))
     else:
         return render_template('newitem.html')
+
 
 # edit item
 @app.route('/catalog/<category_name>/<item_title>/edit',
@@ -217,10 +241,16 @@ def editItem(category_name, item_title):
             editedItem.category_name = request.form['category_name']
         session.add(editedItem)
         session.commit()
-        return redirect(url_for('categoryItems', category_name=category_name))
+        url = url_for('categoryItems', category_name=category_name)
+        return redirect(url)
     else:
+        html = 'edititem.html'
         return render_template(
-            'edititem.html', category_name=category_name, item_title=item_title, item=editedItem)
+            html,
+            category_name=category_name,
+            item_title=item_title,
+            item=editedItem)
+
 
 # delete item
 @app.route('/catalog/<category_name>/<item_title>/delete',
@@ -235,6 +265,7 @@ def deleteItem(category_name, item_title):
         return redirect(url_for('categoryItems', category_name=category_name))
     else:
         return render_template('deleteitem.html', item=itemToDelete)
+
 
 if __name__ == '__main__':
     app.debug = True

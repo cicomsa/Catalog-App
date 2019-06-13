@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+
 class Categories(Base):
     __tablename__ = 'categories'
 
@@ -21,6 +22,7 @@ class Categories(Base):
             'name': self.name,
             'id': self.id,
         }
+
 
 class Items(Base):
     __tablename__ = 'items'

@@ -17,13 +17,13 @@ Run ```python3 /vagrant/catalog/application.py``` and open your localhost browse
 
 ### Endpoints
 
-Catalog page: ```/``` or ```/catalog```
-Category page: ```/catalog/<category_name>```
-Item page: ```/catalog/<category_name>/<item_title>```
-Add item: ```/catalog/new```
-Edit item: ```/catalog/<category_name>/<item_title>/edit```
-Delete item: ```/catalog/<category_name>/<item_title>/delete```
-Catalog JSON: ```/catalog/JSON```
-Category JSON: ```/catalog/<category_name>/JSON```
-Login: ```/login```
-Logout: ```/gdisconnect```
+* Catalog page: ```/``` or ```/catalog```
+* Category page: ```/catalog/<category_name>```
+* Item page: ```/catalog/<category_name>/<item_title>```
+* Add item: ```/catalog/new```
+* Edit item: ```/catalog/<category_name>/<item_title>/edit```
+* Delete item: ```/catalog/<category_name>/<item_title>/delete```
+* Catalog JSON: ```/catalog/JSON```
+* Category JSON: ```/catalog/<category_name>/JSON```
+* Login: ```/login```
+* Logout: ```/gdisconnect```
