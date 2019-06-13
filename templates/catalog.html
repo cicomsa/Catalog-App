@@ -9,7 +9,9 @@
         {% endfor %}
     </div>
     <div>
+        {% if 'email' in session %}
         <a href="{{url_for('newItem') }}">Add new item</a>
+        {% endif %}
         <h3>LATEST ITEMS</h3>
 
         {% set sort_on = request.args.sort_on|default('id') %} {% for i in items|sort(attribute=sort_on, reverse = True) %}

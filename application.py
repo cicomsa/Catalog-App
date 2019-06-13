@@ -131,7 +131,7 @@ def gdisconnect():
         response_copy = 'Current user is not connected.'
         response = make_response(json.dumps(response_copy), 401)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect('/catalog')
     print('In gdisconnect access token is %s', access_token)
     print(login_session)
     url_path = 'https://accounts.google.com/o/oauth2/revoke?token=%s'
@@ -146,12 +146,12 @@ def gdisconnect():
         del login_session['email']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect('/catalog')
     else:
         response_copy = 'Failed to revoke token for given user.'
         response = make_response(json.dumps(response_copy, 400))
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect('/catalog')
 
 
 # catalog JSON

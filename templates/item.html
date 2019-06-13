@@ -4,12 +4,14 @@
         <h3>{{ item.title }}</h3>
         <p>Description: {{item.description}}</p>
     </div>
+    {% if 'email' in session %}
     <div>
         <a href="{{url_for('editItem', category_name = category.name, item_title = item.title) }}">Edit</a>
 
         </br>
         <a href="{{url_for('deleteItem', category_name = category.name, item_title = item.title ) }}">Delete</a>
     </div>
+    {% endif %}
 </section>
 
 <a href="{{url_for('categoryItems', category_name = item.category_name)}}"> Back to category </a>
