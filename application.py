@@ -16,6 +16,8 @@ import json
 from flask import make_response
 import requests
 
+from functools import wraps
+
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog-App Application"
@@ -31,6 +33,17 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 app.secret_key = b'_8#y2L"F4Q8z\n\xec]/'
+
+
+# if user not logged it
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'gplus_id' not in login_session:
+            flash('You are not allowed to access there')
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # login
@@ -174,6 +187,13 @@ def categoryJSON(category_name):
     return jsonify(category=category.serialize)
 
 
+# item JSON
+@app.route('/catalog/<category_name>/<item_title>/JSON')
+def itemJSON(item_title, category_name):
+    item = session.query(Items).filter_by(title=item_title).first()
+    return jsonify(item=item.serialize)
+
+
 # catalog page
 @app.route('/')
 @app.route('/catalog')
@@ -209,15 +229,17 @@ def showItem(item_title, category_name):
 
 # add item
 @app.route('/catalog/new', methods=['GET', 'POST'])
+@login_required
 def newItem():
-    if 'gplus_id' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
         category_name = request.form['category_name']
         newItem = Items(
-            title=title, description=description, category_name=category_name)
+            title=title,
+            description=description,
+            category_name=category_name,
+            user_id=login_session['gplus_id'])
         session.add(newItem)
         session.commit()
         return redirect(url_for('showCatalog'))
@@ -228,40 +250,45 @@ def newItem():
 # edit item
 @app.route('/catalog/<category_name>/<item_title>/edit',
            methods=['GET', 'POST'])
+@login_required
 def editItem(category_name, item_title):
-    if 'gplus_id' not in login_session:
-        return redirect('/login')
     editedItem = session.query(Items).filter_by(title=item_title).one()
-    if request.method == 'POST':
-        if request.form['title']:
-            editedItem.title = request.form['title']
-        if request.form['description']:
-            editedItem.description = request.form['description']
-        if request.form['category_name']:
-            editedItem.category_name = request.form['category_name']
-        session.add(editedItem)
-        session.commit()
+    # edit item
+    if editedItem.user_id == login_session['gplus_id']:
+        if request.method == 'POST':
+            if request.form['title']:
+                editedItem.title = request.form['title']
+            if request.form['description']:
+                editedItem.description = request.form['description']
+            if request.form['category_name']:
+                editedItem.category_name = request.form['category_name']
+            session.add(editedItem)
+            session.commit()
+            url = url_for('categoryItems', category_name=category_name)
+            return redirect(url)
+        else:
+            html = 'edititem.html'
+            return render_template(
+                html,
+                category_name=category_name,
+                item_title=item_title,
+                item=editedItem)
+    else:
         url = url_for('categoryItems', category_name=category_name)
         return redirect(url)
-    else:
-        html = 'edititem.html'
-        return render_template(
-            html,
-            category_name=category_name,
-            item_title=item_title,
-            item=editedItem)
 
 
 # delete item
 @app.route('/catalog/<category_name>/<item_title>/delete',
            methods=['GET', 'POST'])
+@login_required
 def deleteItem(category_name, item_title):
-    if 'gplus_id' not in login_session:
-        return redirect('/login')
-    itemToDelete = session.query(Items).filter_by(id=item_title).one()
+    itemToDelete = session.query(Items).filter_by(title=item_title).one()
+    # delete item
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
+        # redirect to category page
         return redirect(url_for('categoryItems', category_name=category_name))
     else:
         return render_template('deleteitem.html', item=itemToDelete)

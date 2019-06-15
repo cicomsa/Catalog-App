@@ -32,6 +32,7 @@ class Items(Base):
     description = Column(String(250))
     category_name = Column(Integer, ForeignKey('categories.name'))
     category = relationship(Categories, backref='items')
+    user_id = Column(String(80), nullable=False)
 
     @property
     def serialize(self):
@@ -39,8 +40,10 @@ class Items(Base):
         return {
             'title': self.title,
             'description': self.description,
-            'id': self.id
+            'id': self.id,
+            'user_id': self.user_id
         }
+
 
 engine = create_engine('sqlite:///categoriesitems.db')
 

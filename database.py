@@ -58,55 +58,62 @@ session.commit()
 
 # Items
 item1 = Items(title="Stick", description="Stick description",
-              category=category9)
+              category=category9, user_id='none')
 
 session.add(item1)
 session.commit()
 
 item2 = Items(title="Goggles", description="Goggles description",
-              category=category5)
+              category=category5, user_id='none')
 
 session.add(item2)
 session.commit()
 
 item3 = Items(title="Showboard",
-              description="Showboard description", category=category5)
+              description="Showboard description",
+              category=category5, user_id='none')
 
 session.add(item3)
 session.commit()
 
 item4 = Items(title="Two shinguards",
-              description="Two shinguards description", category=category1)
+              description="Two shinguards description",
+              category=category1, user_id='none')
 
 session.add(item4)
 session.commit()
 
 item5 = Items(title="Shinguards",
-              description="Shinguards description", category=category1)
+              description="Shinguards description",
+              category=category1, user_id='none')
 
 session.add(item5)
 session.commit()
 
 item5 = Items(title="Frisbee",
-              description="Frisbee description", category=category4)
+              description="Frisbee description",
+              category=category4, user_id='none')
 
 session.add(item5)
 session.commit()
 
 item6 = Items(title="Bat",
-              description="Bat description", category=category3)
+              description="Bat description",
+              category=category3, user_id='none')
 
 session.add(item6)
 session.commit()
 
 item7 = Items(title="Jersey",
-              description="Jersey description", category=category1)
+              description="Jersey description",
+              category=category1, user_id='none')
 
 session.add(item7)
 session.commit()
 
 item8 = Items(title="Soccer Cleats",
-              description="Soccer Cleats description", category=category1)
+              description="Soccer Cleats description",
+              category=category1, user_id='none')
 
 session.add(item8)
 session.commit()
