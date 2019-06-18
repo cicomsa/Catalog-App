@@ -4,7 +4,7 @@
         <h3>{{ item.title }}</h3>
         <p>Description: {{item.description}}</p>
     </div>
-    {% if 'email' in session and item.user_id == session['gplus_id'] %}
+    {% if 'email' in session and (item.user_id | int) == session['id'] %}
     <div>
         <a href="{{url_for('editItem', category_name = category.name, item_title = item.title) }}">Edit</a>
 
