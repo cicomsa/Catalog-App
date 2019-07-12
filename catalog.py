@@ -28,7 +28,7 @@ class Categories(Base):
     __tablename__ = 'categories'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    name = Column(Integer(250), nullable=False)
 
     @property
     def serialize(self):
@@ -41,6 +41,7 @@ class Categories(Base):
 
 class Items(Base):
     __tablename__ = 'items'
+    __table_args__ = (UniqueConstraint('category_name', name='key'), )
 
     title = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
@@ -56,7 +57,8 @@ class Items(Base):
         return {
             'title': self.title,
             'description': self.description,
-            'id': self.id
+            'id': self.id,
+            'category_name': self.category_name
         }
 
 
